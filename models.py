@@ -89,12 +89,21 @@ def sample_topk(logits: torch.Tensor, topk: int, temperature: float):
 
 @dataclass
 class ModelArgs:
-    backbone_flavor: str
-    decoder_flavor: str
-    text_vocab_size: int
-    audio_vocab_size: int
-    audio_num_codebooks: int
+    backbone_flavor: str = ""
+    decoder_flavor: str  = ""
+    text_vocab_size: int = 0
+    audio_vocab_size: int = 0
+    audio_num_codebooks: int = 0
 
+llama3_2_1B_config = ModelArgs()
+for k, v in {
+    "audio_num_codebooks": 32,
+    "audio_vocab_size": 2051,
+    "backbone_flavor": "llama-1B",
+    "decoder_flavor": "llama-100M",
+    "text_vocab_size": 128256
+}.items():
+    setattr(llama3_2_1B_config, k, v)
 
 class Model(
     nn.Module,
@@ -103,7 +112,7 @@ class Model(
     pipeline_tag="text-to-speech",
     license="apache-2.0",
 ):
-    def __init__(self, config: ModelArgs):
+    def __init__(self, config: ModelArgs=llama3_2_1B_config):
         super().__init__()
         self.config = config
 
